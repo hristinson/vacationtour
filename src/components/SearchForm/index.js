@@ -1,50 +1,50 @@
-import { useState, useEffect } from "react";
-import { getCountries, searchGeo } from "../../api/api";
+import { useCallback, useState } from "react";
+import { searchGeo } from "../../api/api";
 import DeletePointButton from "../DeletePointButton";
-import CountryFlag from "../CountryFlag";
+import ElementIcon from "../ElementIcon";
 import styles from "./index.module.css";
 
 const SearchForm = () => {
   const [query, setQuery] = useState("");
-  const [countries, setCountries] = useState([]);
   const [filteredResults, setFilteredResults] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchCountries = async () => {
-      const response = await getCountries();
-      const data = await response.json();
-      setCountries(Object.values(data));
-    };
-    fetchCountries();
+  const handleSubmit = useCallback((event) => {
+    event.preventDefault();
+    console.log("submit");
   }, []);
 
-  const handleSubmit = () => {
-    alert("submit");
-  };
+  const handleChange = useCallback(
+    async (e) => {
+      const query = e.target.value;
+      setQuery(query);
+      setIsDropdownOpen(query.length > 0);
 
-  const handleChange = async (e) => {
-    const query = e.target.value;
-    setQuery(query);
-    setIsDropdownOpen(query.length > 0);
+      const response = await searchGeo(query);
+      const data = await response.json();
+      setFilteredResults(Object.values(data));
+    },
+    [setFilteredResults, setQuery, setIsDropdownOpen]
+  );
 
-    const response = await searchGeo(query);
-    const data = await response.json();
-    setFilteredResults(Object.values(data));
-  };
+  const handleSelect = useCallback(
+    (item) => {
+      setSelectedItems((prevItems) => [...prevItems, item]);
+      setQuery("");
+      setIsDropdownOpen(false);
+    },
+    [setIsDropdownOpen, setQuery, setSelectedItems]
+  );
 
-  const handleSelect = (item) => {
-    setSelectedItems((prevItems) => [...prevItems, item]);
-    setQuery("");
-    setIsDropdownOpen(false);
-  };
-
-  const handleRemoveItem = (index) => {
-    setSelectedItems((prevItems) =>
-      prevItems.filter((_, idx) => idx !== index)
-    );
-  };
+  const handleRemoveItem = useCallback(
+    (index) => {
+      setSelectedItems((prevItems) =>
+        prevItems.filter((_, idx) => idx !== index)
+      );
+    },
+    [setSelectedItems]
+  );
 
   return (
     <form onSubmit={handleSubmit} className={styles.search_container}>
@@ -62,7 +62,7 @@ const SearchForm = () => {
           <ul style={{ zIndex: 10 }}>
             {filteredResults.map((item, index) => (
               <li key={index} onClick={() => handleSelect(item)}>
-                <CountryFlag countries={countries} item={item} />
+                <ElementIcon item={item} />
                 {item.name} {item.type && `(${item.type})`}{" "}
               </li>
             ))}
@@ -78,7 +78,7 @@ const SearchForm = () => {
               <li key={index}>
                 <div className={styles.list_item}>
                   <div>
-                    <CountryFlag countries={countries} item={item} />
+                    <ElementIcon item={item} />
                     {item.name}
                   </div>
                   <DeletePointButton onClick={() => handleRemoveItem(index)} />
