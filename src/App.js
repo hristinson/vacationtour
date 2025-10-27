@@ -78,7 +78,7 @@ function App() {
               ) : tours.length > 0 ? (
                 tours.map((item, key) => <TourCard tour={item} key={key} />)
               ) : (
-                <>No results</>
+                <div className="no_results">No results</div>
               )}
             </div>
           ) : (

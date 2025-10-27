@@ -34,3 +34,8 @@ body {
   align-items: center;
   justify-items: center;
 }
+
+.no_results {
+  font-size: 30px;
+  font-weight: 600;
+}
