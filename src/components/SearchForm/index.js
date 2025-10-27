@@ -4,16 +4,18 @@ import DeletePointButton from "../DeletePointButton";
 import ElementIcon from "../ElementIcon";
 import styles from "./index.module.css";
 
-const SearchForm = () => {
+const SearchForm = ({ setIsSearch, selectedItems, setSelectedItems }) => {
   const [query, setQuery] = useState("");
   const [filteredResults, setFilteredResults] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const handleSubmit = useCallback((event) => {
-    event.preventDefault();
-    console.log("submit");
-  }, []);
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+      setIsSearch(true);
+    },
+    [setIsSearch]
+  );
 
   const handleChange = useCallback(
     async (e) => {
