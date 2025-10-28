@@ -1,15 +1,20 @@
-import { useCallback, useState } from "react";
-import { searchGeo } from "../../api/api";
+import { useCallback } from "react";
 import DeletePointButton from "../DeletePointButton";
 import ElementIcon from "../ElementIcon";
 import styles from "./index.module.css";
+import useSearchForm from "../../hooks/useSearchForm";
 
 const SearchForm = ({ setIsSearch, selectedItems, setSelectedItems }) => {
-  const [query, setQuery] = useState("");
-  const [filteredResults, setFilteredResults] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const {
+    query,
+    filteredResults,
+    isDropdownOpen,
+    handleChange,
+    handleSelect,
+    handleRemoveItem,
+  } = useSearchForm(setSelectedItems);
 
-  const handleSubmit = useCallback(
+  const handleFormSubmit = useCallback(
     (event) => {
       event.preventDefault();
       setIsSearch(true);
@@ -17,39 +22,8 @@ const SearchForm = ({ setIsSearch, selectedItems, setSelectedItems }) => {
     [setIsSearch]
   );
 
-  const handleChange = useCallback(
-    async (e) => {
-      const query = e.target.value;
-      setQuery(query);
-      setIsDropdownOpen(query.length > 0);
-
-      const response = await searchGeo(query);
-      const data = await response.json();
-      setFilteredResults(Object.values(data));
-    },
-    [setFilteredResults, setQuery, setIsDropdownOpen]
-  );
-
-  const handleSelect = useCallback(
-    (item) => {
-      setSelectedItems((prevItems) => [...prevItems, item]);
-      setQuery("");
-      setIsDropdownOpen(false);
-    },
-    [setIsDropdownOpen, setQuery, setSelectedItems]
-  );
-
-  const handleRemoveItem = useCallback(
-    (index) => {
-      setSelectedItems((prevItems) =>
-        prevItems.filter((_, idx) => idx !== index)
-      );
-    },
-    [setSelectedItems]
-  );
-
   return (
-    <form onSubmit={handleSubmit} className={styles.search_container}>
+    <form onSubmit={handleFormSubmit} className={styles.search_container}>
       <h3>Форма пошуку турів</h3>
       <input
         type="text"

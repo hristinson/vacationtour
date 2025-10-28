@@ -5,11 +5,7 @@ body {
   padding: 0;
 }
 
-#root {
-  height: 100%;
-}
-
-.App {
+.main {
   height: 100%;
   width: 100%;
   display: flex;
@@ -38,4 +34,7 @@ body {
 .no_results {
   font-size: 30px;
   font-weight: 600;
+  div {
+    cursor: pointer;
+  }
 }

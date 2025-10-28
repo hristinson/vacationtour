@@ -20,7 +20,16 @@ const TourDetails = ({ isOpen, onClose, data }) => {
           {Object.entries(data.services).map(([key, value]) => {
             return value === "yes" ? (
               <li key={key}>
-                <strong>{key}</strong>
+                <strong>
+                  {key
+                    .split("_")
+                    .map(
+                      (word) =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase()
+                    )
+                    .join(" ")}
+                </strong>
               </li>
             ) : null;
           })}

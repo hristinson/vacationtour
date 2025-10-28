@@ -1,57 +1,19 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React from "react";
 import styles from "./index.module.css";
-import { getHotel, getCountries } from "../../api/api";
 import TourDetails from "../TourDetails";
+import useHotelData from "../../hooks/useHotelData";
 
-const PREFIX = "countriesFlags";
 const CURRENCY = 40;
 
 const TourCard = ({ tour }) => {
-  const [hotel, setHotel] = useState();
-  const [showPrice, setShowPrice] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const getCountry = useCallback(async (id) => {
-    const cachedFlag = localStorage.getItem(`${PREFIX}${id}`);
-    if (cachedFlag) {
-      return cachedFlag;
-    }
-
-    const countriesData = await getCountries();
-    const countries = await countriesData.json();
-    const items = Object.values(countries);
-    const findImageById = (id) => items.find((item) => item.id === id)?.flag;
-    const foundFlag = findImageById(id);
-    localStorage.setItem(`${PREFIX}${id}`, foundFlag);
-
-    return foundFlag;
-  }, []);
-
-  const formatDate = useCallback((dateStr) => {
-    const date = new Date(dateStr);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${day}.${month}.${year}`;
-  }, []);
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const hotelJSON = await getHotel(Number(tour.hotelID));
-        const hotel = await hotelJSON.json();
-        const img = await getCountry(hotel.countryId);
-        setHotel({ ...hotel, countryImg: img, tour });
-      } catch (error) {
-        console.error("Error loading hotel data:", error);
-      }
-    };
-
-    if (tour.hotelID) {
-      loadData();
-    }
-  }, [tour, getCountry]);
+  const {
+    hotel,
+    showPrice,
+    setShowPrice,
+    isModalOpen,
+    setModalOpen,
+    formatDate,
+  } = useHotelData(tour);
 
   return (
     <div className={styles.card}>

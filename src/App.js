@@ -1,63 +1,14 @@
-import { useEffect, useState, useCallback } from "react";
-import "./App.css";
+import { useEffect, useState } from "react";
 import SearchForm from "./components/SearchForm";
-import { startSearchPrices, getSearchPrices } from "./api/api";
-import TourCard from "./components/TourCard";
 import Loader from "./components/Loader";
+import TourCard from "./components/TourCard";
+import useSearchTours from "./hooks/useSearchTours";
+import styles from "./main.module.css";
 
 function App() {
-  const [isSearch, setIsSearch] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [tours, setTours] = useState([]);
-  const [error, setError] = useState(null);
-
-  const handleSearchHotels = useCallback(async () => {
-    if (selectedItems.length === 0) {
-      return;
-    }
-
-    const toursArray = [];
-    // let retries = 0;
-    const maxRetries = 2;
-    setIsLoading(true);
-    try {
-      for (const item of selectedItems) {
-        const res = await startSearchPrices(item.id);
-        const { token, waitUntil } = await res.json();
-        const waitTime = new Date(waitUntil).getTime() - new Date().getTime();
-        if (waitTime > 0) {
-          await new Promise((resolve) => setTimeout(resolve, waitTime));
-        }
-
-        let searchResults = null;
-        let searchRetries = 2;
-        while (!searchResults && searchRetries <= maxRetries) {
-          try {
-            searchResults = await getSearchPrices(token);
-          } catch (error) {
-            searchRetries--;
-            if (searchRetries > maxRetries) {
-              throw new Error("Failed to fetch data after attempts.");
-            }
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-          }
-        }
-
-        if (searchResults) {
-          const tours = await searchResults.json();
-          toursArray.push(...Object.values(tours.prices));
-        }
-      }
-
-      setTours(toursArray);
-      setIsSearch(true);
-      setIsLoading(false);
-    } catch (err) {
-      setError(err.message);
-      console.error("Error:", err);
-    }
-  }, [selectedItems]);
+  const { tours, isLoading, error, isSearch, setIsSearch, handleSearchHotels } =
+    useSearchTours(selectedItems);
 
   useEffect(() => {
     if (isSearch) {
@@ -66,23 +17,27 @@ function App() {
   }, [selectedItems, handleSearchHotels, isSearch]);
 
   return (
-    <div className="App">
+    <div className={styles.main}>
       {isLoading ? (
         <Loader />
       ) : (
         <>
           {isSearch ? (
-            <div className="main_results">
+            <div className={styles.main_results}>
               {error ? (
                 <div>Error: {error}</div>
               ) : tours.length > 0 ? (
                 tours.map((item, key) => <TourCard tour={item} key={key} />)
               ) : (
-                <div className="no_results">No results</div>
+                <div className={styles.no_results}>
+                  <div onClick={() => setIsSearch(false)}>
+                    No results, tap on this text and try again
+                  </div>
+                </div>
               )}
             </div>
           ) : (
-            <div className="main_container">
+            <div className={styles.main_container}>
               <SearchForm
                 setIsSearch={setIsSearch}
                 selectedItems={selectedItems}
