@@ -3,8 +3,14 @@ import styles from "./index.module.css";
 const TourDetails = ({ isOpen, onClose, data }) => {
   if (!isOpen) return null;
 
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className={styles.modal_overlay}>
+    <div className={styles.modal_overlay} onClick={handleOverlayClick}>
       <div className={styles.modal_content}>
         <button className={styles.close_btn} onClick={onClose}>
           &times;
