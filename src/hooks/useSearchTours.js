@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { startSearchPrices, getSearchPrices } from "../api/api";
 
-const useSearchTours = (selectedItems) => {
+const useSearchTours = (selectedItems, setToken) => {
   const [tours, setTours] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,6 +19,7 @@ const useSearchTours = (selectedItems) => {
       for (const item of selectedItems) {
         const res = await startSearchPrices(item.id);
         const { token, waitUntil } = await res.json();
+        setToken(token);
         const waitTime = new Date(waitUntil).getTime() - new Date().getTime();
         if (waitTime > 0) {
           await new Promise((resolve) => setTimeout(resolve, waitTime));
@@ -51,9 +52,17 @@ const useSearchTours = (selectedItems) => {
       console.error("Error:", err);
       setIsLoading(false);
     }
-  }, [selectedItems]);
+  }, [selectedItems, setToken]);
 
-  return { tours, isLoading, error, isSearch, setIsSearch, handleSearchHotels };
+  return {
+    tours,
+    isLoading,
+    error,
+    isSearch,
+    setIsSearch,
+    handleSearchHotels,
+    setIsLoading,
+  };
 };
 
 export default useSearchTours;

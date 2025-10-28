@@ -1,14 +1,36 @@
-.loader-overlay {
+.loader_overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.082);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
+}
+
+.loader_wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cancel_button {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cancel_button:hover {
+  background-color: #ff1a1a7e;
 }
 
 .loader {
@@ -18,6 +40,7 @@
   width: 50px;
   height: 50px;
   animation: spin 2s linear infinite;
+  margin-bottom: 16px;
 }
 
 @keyframes spin {
