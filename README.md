@@ -14,4 +14,4 @@ You may also see any lint errors in the console.
 
 ### Deployment
 
-https://vacationtour.vercel.app/?
+https://vacationtour.vercel.app/
